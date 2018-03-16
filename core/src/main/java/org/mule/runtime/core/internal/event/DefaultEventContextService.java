@@ -64,10 +64,9 @@ public class DefaultEventContextService implements EventContextService {
   }
 
   public void removeContext(DefaultEventContext context) {
-    // MULE-14151 This is a temporary workaround until all possible causes of the logged warning are fixed.
+    // MULE-14151 This is a temporary workaround
     Reference<? extends DefaultEventContext> polled = queue.poll();
     while (polled != null) {
-      LOGGER.warn("EventContext with id {} was not terminated.", polled.get().getId());
       currentContexts.remove(polled);
 
       polled = queue.poll();

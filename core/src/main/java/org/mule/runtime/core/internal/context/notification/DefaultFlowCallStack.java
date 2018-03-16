@@ -6,8 +6,13 @@
  */
 package org.mule.runtime.core.internal.context.notification;
 
+import static java.lang.System.lineSeparator;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.mule.runtime.core.api.context.notification.FlowCallStack;
 import org.mule.runtime.core.api.context.notification.FlowStackElement;
+
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -22,6 +27,8 @@ public class DefaultFlowCallStack implements FlowCallStack {
 
   private static final long serialVersionUID = -8683711977929802819L;
 
+  private static final Logger LOGGER = getLogger(DefaultFlowCallStack.class);
+
   private Stack<FlowStackElement> innerStack = new Stack<>();
 
   /**
@@ -30,6 +37,9 @@ public class DefaultFlowCallStack implements FlowCallStack {
    * @param flowStackElement the element to add
    */
   public void push(FlowStackElement flowStackElement) {
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("push: {}", flowStackElement.toString());
+    }
     innerStack.push(flowStackElement);
   }
 
@@ -53,7 +63,11 @@ public class DefaultFlowCallStack implements FlowCallStack {
    * @throws EmptyStackException if this stack is empty.
    */
   public FlowStackElement pop() {
-    return innerStack.pop();
+    FlowStackElement element = innerStack.pop();
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("pop: {}", element.toString());
+    }
+    return element;
   }
 
   @Override
@@ -81,7 +95,7 @@ public class DefaultFlowCallStack implements FlowCallStack {
     for (int i = innerStack.size() - 1; i >= 0; --i) {
       stackString.append("at ").append(innerStack.get(i).toString());
       if (i != 0) {
-        stackString.append(System.lineSeparator());
+        stackString.append(lineSeparator());
       }
     }
     return stackString.toString();

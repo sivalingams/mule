@@ -7,11 +7,11 @@
 
 package org.mule.test.runner.api;
 
-import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor.MULE_AUTO_GENERATED_ARTIFACT_PATH_INSIDE_JAR;
+
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.MuleContext;
@@ -24,13 +24,14 @@ import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.extension.api.manager.DefaultExtensionManagerFactory;
 import org.mule.runtime.module.extension.api.manager.ExtensionManagerFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@link org.mule.runtime.core.api.config.ConfigurationBuilder} that creates an
@@ -119,7 +120,8 @@ public class IsolatedClassLoaderExtensionsManagerConfigurationBuilder extends Ab
             MulePluginBasedLoaderFinder finder = new MulePluginBasedLoaderFinder(json.openStream());
             if (finder.isExtensionModelLoaderDescriptorDefined()) {
               ExtensionModel extension =
-                  finder.getLoader().loadExtensionModel(classLoader, getDefault(emptySet()), finder.getParams());
+                  finder.getLoader().loadExtensionModel(classLoader, getDefault(new HashSet<>(extensionModels)),
+                                                        finder.getParams());
               extensionModels.add(extension);
             } else {
               LOGGER
